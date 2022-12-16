@@ -22,18 +22,18 @@ use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
 
 class Event extends \Symfony\Contracts\EventDispatcher\Event implements StoppableEventInterface {
-    const CACHE_GET_START = 'cache:get.start';
-    const CACHE_GET_ERROR = 'cache:get.error';
-    const CACHE_GET_HIT = 'cache:get.hit';
-    const CACHE_GET_MISS = 'cache:get.miss';
-    const BUILD_START = 'build:start';
-    const BUILD_ERROR = 'build:error';
-    const BUILD_SUCCESS = 'build:success';
-    const BUILD_FAIL = 'build:fail';
-    const CACHE_SET_START = 'cache:set.start';
-    const CACHE_SET_ERROR = 'cache:set.error';
-    const CACHE_SET_SUCCESS = 'cache:set.success';
-    const CACHE_SET_FAIL = 'cache:set.fail';
+    public const CACHE_GET_START = 'cache:get.start';
+    public const CACHE_GET_ERROR = 'cache:get.error';
+    public const CACHE_GET_HIT = 'cache:get.hit';
+    public const CACHE_GET_MISS = 'cache:get.miss';
+    public const BUILD_START = 'build:start';
+    public const BUILD_ERROR = 'build:error';
+    public const BUILD_SUCCESS = 'build:success';
+    public const BUILD_FAIL = 'build:fail';
+    public const CACHE_SET_START = 'cache:set.start';
+    public const CACHE_SET_ERROR = 'cache:set.error';
+    public const CACHE_SET_SUCCESS = 'cache:set.success';
+    public const CACHE_SET_FAIL = 'cache:set.fail';
 
     /**
      * @var string|null
@@ -55,69 +55,35 @@ class Event extends \Symfony\Contracts\EventDispatcher\Event implements Stoppabl
      */
     private ?CacheException $cacheException = null;
 
-    /**
-     * @var string
-     */
-    private string $message;
-
-    /**
-     * @var string
-     */
-    private string $sessionId;
-
-    /**
-     * @param string $message
-     * @param string $sessionId
-     */
-    public function __construct(string $message, string $sessionId) {
-        $this->message = $message;
-        $this->sessionId = $sessionId;
+    public function __construct(private string $message, private string $sessionId)
+    {
     }
 
-    /**
-     * @return Exception|null
-     */
     public function getBuildException() : ?Exception {
         return $this->buildException;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCacheKey() : ?string {
         return $this->cacheKey;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCacheType() : ?string {
         return $this->cacheType;
     }
 
-    /**
-     * @return CacheException|null
-     */
     public function getCacheException() : ?CacheException {
         return $this->cacheException;
     }
 
-    /**
-     * @return string
-     */
     public function getMessage() : string {
         return $this->message;
     }
 
-    /**
-     * @return string
-     */
     public function getSessionId() : string {
         return $this->sessionId;
     }
 
     /**
-     * @param Exception $e
      * @return static
      */
     public function withBuildException(Exception $e) : object {
@@ -127,19 +93,16 @@ class Event extends \Symfony\Contracts\EventDispatcher\Event implements Stoppabl
     }
 
     /**
-     * @param CacheInterface $cache
-     * @param string|null $key
      * @return static
      */
     public function withCache(CacheInterface $cache, ?string $key = null) : object {
         $event = clone $this;
-        $event->cacheType = get_class($cache);
+        $event->cacheType = $cache::class;
         $event->cacheKey = $key;
         return $event;
     }
 
     /**
-     * @param CacheException $e
      * @return static
      */
     public function withCacheException(CacheException $e) : object {

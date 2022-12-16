@@ -21,7 +21,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 class TestCase extends \PHPUnit\Framework\TestCase {
 
     /**
-     * @param string $class
      * @return MockObject
      */
     protected function newMock(string $class) : MockObject {

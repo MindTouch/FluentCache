@@ -93,24 +93,14 @@ class CacheBuilder implements ICacheBuilder {
      * @param UuidFactoryInterface|null $uuidFactory - an optional uuid generation override to control automatic session ids
      */
     public function __construct(?UuidFactoryInterface $uuidFactory = null) {
-        $this->buildValidator = function($result) : bool {
-            return $result !== null;
-        };
-        $this->cacheKeyBuilder = function() : ?string {
-            return null;
-        };
-        $this->cacheLifespanBuilder = function() : int {
-            return 0;
-        };
-        $this->cacheValidator = function($result) : bool {
-            return $result !== null;
-        };
-        $this->lazyDispatcher = function() : EventDispatcherInterface {
-            return new class implements EventDispatcherInterface {
-                public function dispatch(object $event) : object {
-                    return $event;
-                }
-            };
+        $this->buildValidator = fn($result): bool => $result !== null;
+        $this->cacheKeyBuilder = fn(): ?string => null;
+        $this->cacheLifespanBuilder = fn(): int => 0;
+        $this->cacheValidator = fn($result): bool => $result !== null;
+        $this->lazyDispatcher = fn(): EventDispatcherInterface => new class implements EventDispatcherInterface {
+            public function dispatch(object $event) : object {
+                return $event;
+            }
         };
         $this->uuidFactory = $uuidFactory ?? new UuidFactory();
     }
@@ -244,9 +234,6 @@ class CacheBuilder implements ICacheBuilder {
         return $instance;
     }
 
-    /**
-     * @param Event $event
-     */
     private function dispatch(Event $event) : void {
         if($this->dispatcher === null) {
             $func = $this->lazyDispatcher;
@@ -258,10 +245,6 @@ class CacheBuilder implements ICacheBuilder {
         $this->dispatcher->dispatch($event);
     }
 
-    /**
-     * @param string $message
-     * @return Event
-     */
     private function newEvent(string $message) : Event {
         return new Event($message, $this->getSessionId());
     }

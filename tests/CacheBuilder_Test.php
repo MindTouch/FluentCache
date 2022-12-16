@@ -29,9 +29,6 @@ use Ramsey\Uuid\UuidInterface;
 
 class CacheBuilder_Test extends TestCase {
 
-    /**
-     * @return array
-     */
     public static function isLazyDispatcherEnabled_sessionId_Provider() : array {
         return [
             'with lazy dispatcher' => [true, null],
@@ -44,12 +41,10 @@ class CacheBuilder_Test extends TestCase {
     /**
      * @var UuidFactoryInterface
      */
-    private $uuidFactory;
+    private \PHPUnit\Framework\MockObject\MockObject $uuidFactory;
 
     /**
      * @dataProvider isLazyDispatcherEnabled_sessionId_Provider
-     * @param bool $isLazyDispatcherEnabled
-     * @param string|null $sessionId
      * @test
      */
     public function Build(bool $isLazyDispatcherEnabled, ?string $sessionId) : void {
@@ -65,9 +60,7 @@ class CacheBuilder_Test extends TestCase {
 
         // act
         $builder = (new CacheBuilder($this->uuidFactory))
-            ->withBuilder(function() : string {
-                return 'qux';
-            });
+            ->withBuilder(fn(): string => 'qux');
 
         /** @var EventDispatcherInterface $dispatcher */
         $builder = $isLazyDispatcherEnabled
@@ -86,8 +79,6 @@ class CacheBuilder_Test extends TestCase {
 
     /**
      * @dataProvider isLazyDispatcherEnabled_sessionId_Provider
-     * @param bool $isLazyDispatcherEnabled
-     * @param string|null $sessionId
      * @test
      */
     public function Build_failed(bool $isLazyDispatcherEnabled, ?string $sessionId) : void {
@@ -103,9 +94,7 @@ class CacheBuilder_Test extends TestCase {
 
         // act
         $builder = (new CacheBuilder($this->uuidFactory))
-            ->withBuilder(function() : string {
-                return 'qux';
-            })
+            ->withBuilder(fn(): string => 'qux')
             ->withBuildValidator(function($result) : bool {
 
                 // assert
@@ -131,8 +120,6 @@ class CacheBuilder_Test extends TestCase {
     /**
      * @test
      * @dataProvider isLazyDispatcherEnabled_sessionId_Provider
-     * @param bool $isLazyDispatcherEnabled
-     * @param string|null $sessionId
      */
     public function Cache_hit(bool $isLazyDispatcherEnabled, ?string $sessionId) : void {
 
@@ -154,9 +141,7 @@ class CacheBuilder_Test extends TestCase {
 
         // act
         $builder = (new CacheBuilder($this->uuidFactory))
-            ->withCache($cache, function() : string {
-                return 'foo';
-            });
+            ->withCache($cache, fn(): string => 'foo');
 
         /** @var EventDispatcherInterface $dispatcher */
         $builder = $isLazyDispatcherEnabled
@@ -176,8 +161,6 @@ class CacheBuilder_Test extends TestCase {
     /**
      * @test
      * @dataProvider isLazyDispatcherEnabled_sessionId_Provider
-     * @param bool $isLazyDispatcherEnabled
-     * @param string|null $sessionId
      */
     public function Cache_miss_with_build(bool $isLazyDispatcherEnabled, ?string $sessionId) : void {
 
@@ -207,12 +190,8 @@ class CacheBuilder_Test extends TestCase {
 
         // act
         $builder = (new CacheBuilder($this->uuidFactory))
-            ->withBuilder(function() : string {
-                return 'qux';
-            })
-            ->withCache($cache, function() : string {
-                return 'foo';
-            });
+            ->withBuilder(fn(): string => 'qux')
+            ->withCache($cache, fn(): string => 'foo');
 
         /** @var EventDispatcherInterface $dispatcher */
         $builder = $isLazyDispatcherEnabled
@@ -232,8 +211,6 @@ class CacheBuilder_Test extends TestCase {
     /**
      * @test
      * @dataProvider isLazyDispatcherEnabled_sessionId_Provider
-     * @param bool $isLazyDispatcherEnabled
-     * @param string|null $sessionId
      */
     public function Cache_miss_with_build_and_ttl(bool $isLazyDispatcherEnabled, ?string $sessionId) : void {
 
@@ -263,12 +240,8 @@ class CacheBuilder_Test extends TestCase {
 
         // act
         $builder = (new CacheBuilder($this->uuidFactory))
-            ->withBuilder(function() : string {
-                return 'qux';
-            })
-            ->withCache($cache, function() : string {
-                return 'foo';
-            })
+            ->withBuilder(fn(): string => 'qux')
+            ->withCache($cache, fn(): string => 'foo')
             ->withCacheLifespanBuilder(function($result) : int {
 
                 // assert
@@ -294,8 +267,6 @@ class CacheBuilder_Test extends TestCase {
     /**
      * @test
      * @dataProvider isLazyDispatcherEnabled_sessionId_Provider
-     * @param bool $isLazyDispatcherEnabled
-     * @param string|null $sessionId
      */
     public function Cache_miss_without_build(bool $isLazyDispatcherEnabled, ?string $sessionId) : void {
 
@@ -317,9 +288,7 @@ class CacheBuilder_Test extends TestCase {
 
         // act
         $builder = (new CacheBuilder($this->uuidFactory))
-            ->withCache($cache, function() : string {
-                return 'foo';
-            });
+            ->withCache($cache, fn(): string => 'foo');
 
         /** @var EventDispatcherInterface $dispatcher */
         $builder = $isLazyDispatcherEnabled
@@ -339,8 +308,6 @@ class CacheBuilder_Test extends TestCase {
     /**
      * @test
      * @dataProvider isLazyDispatcherEnabled_sessionId_Provider
-     * @param bool $isLazyDispatcherEnabled
-     * @param string|null $sessionId
      */
     public function Cache_hit_fails_validation_with_build(bool $isLazyDispatcherEnabled, ?string $sessionId) : void {
 
@@ -370,12 +337,8 @@ class CacheBuilder_Test extends TestCase {
 
         // act
         $builder = (new CacheBuilder($this->uuidFactory))
-            ->withBuilder(function() : string {
-                return 'xyzzy';
-            })
-            ->withCache($cache, function() : string {
-                return 'foo';
-            })
+            ->withBuilder(fn(): string => 'xyzzy')
+            ->withCache($cache, fn(): string => 'foo')
             ->withCacheValidator(function($result) : bool {
 
                 // assert
@@ -401,8 +364,6 @@ class CacheBuilder_Test extends TestCase {
     /**
      * @test
      * @dataProvider isLazyDispatcherEnabled_sessionId_Provider
-     * @param bool $isLazyDispatcherEnabled
-     * @param string|null $sessionId
      */
     public function Cache_hit_fails_validation_with_build_and_updated_cache_key(bool $isLazyDispatcherEnabled, ?string $sessionId) : void {
 
@@ -468,8 +429,6 @@ class CacheBuilder_Test extends TestCase {
     /**
      * @test
      * @dataProvider isLazyDispatcherEnabled_sessionId_Provider
-     * @param bool $isLazyDispatcherEnabled
-     * @param string|null $sessionId
      */
     public function Handles_cache_get_error(bool $isLazyDispatcherEnabled, ?string $sessionId) : void {
 
@@ -503,9 +462,7 @@ class CacheBuilder_Test extends TestCase {
 
         // act
         $builder = (new CacheBuilder($this->uuidFactory))
-            ->withCache($cache, function() : string {
-                return 'foo';
-            });
+            ->withCache($cache, fn(): string => 'foo');
 
         /** @var EventDispatcherInterface $dispatcher */
         $builder = $isLazyDispatcherEnabled
@@ -525,8 +482,6 @@ class CacheBuilder_Test extends TestCase {
     /**
      * @test
      * @dataProvider isLazyDispatcherEnabled_sessionId_Provider
-     * @param bool $isLazyDispatcherEnabled
-     * @param string|null $sessionId
      */
     public function Handles_cache_get_error_and_builds(bool $isLazyDispatcherEnabled, ?string $sessionId) : void {
 
@@ -568,12 +523,8 @@ class CacheBuilder_Test extends TestCase {
 
         // act
         $builder = (new CacheBuilder($this->uuidFactory))
-            ->withBuilder(function() : string {
-                return 'plugh';
-            })
-            ->withCache($cache, function() : string {
-                return 'foo';
-            });
+            ->withBuilder(fn(): string => 'plugh')
+            ->withCache($cache, fn(): string => 'foo');
 
         /** @var EventDispatcherInterface $dispatcher */
         $builder = $isLazyDispatcherEnabled
@@ -593,8 +544,6 @@ class CacheBuilder_Test extends TestCase {
     /**
      * @test
      * @dataProvider isLazyDispatcherEnabled_sessionId_Provider
-     * @param bool $isLazyDispatcherEnabled
-     * @param string|null $sessionId
      */
     public function Handles_cache_set_error(bool $isLazyDispatcherEnabled, ?string $sessionId) : void {
 
@@ -635,12 +584,8 @@ class CacheBuilder_Test extends TestCase {
 
         // act
         $builder = (new CacheBuilder($this->uuidFactory))
-            ->withBuilder(function() : string {
-                return 'qux';
-            })
-            ->withCache($cache, function() : string {
-                return 'foo';
-            });
+            ->withBuilder(fn(): string => 'qux')
+            ->withCache($cache, fn(): string => 'foo');
 
         /** @var EventDispatcherInterface $dispatcher */
         $builder = $isLazyDispatcherEnabled
@@ -660,8 +605,6 @@ class CacheBuilder_Test extends TestCase {
     /**
      * @test
      * @dataProvider isLazyDispatcherEnabled_sessionId_Provider
-     * @param bool $isLazyDispatcherEnabled
-     * @param string|null $sessionId
      */
     public function Handles_build_error(bool $isLazyDispatcherEnabled, ?string $sessionId) : void {
 
@@ -714,9 +657,7 @@ class CacheBuilder_Test extends TestCase {
 
         // act
         $result = (new CacheBuilder($this->uuidFactory))
-            ->withBuilder(function() : string {
-                return 'qux';
-            })
+            ->withBuilder(fn(): string => 'qux')
             ->get();
 
         // assert
@@ -739,9 +680,7 @@ class CacheBuilder_Test extends TestCase {
         $result = (new CacheBuilder($this->uuidFactory))
 
             /** @var CacheInterface $cache */
-            ->withCache($cache, function() : string {
-                return 'foo';
-            })
+            ->withCache($cache, fn(): string => 'foo')
             ->get();
 
         // assert
@@ -765,14 +704,10 @@ class CacheBuilder_Test extends TestCase {
 
         // act
         $result = (new CacheBuilder($this->uuidFactory))
-            ->withBuilder(function() : string {
-                return 'qux';
-            })
+            ->withBuilder(fn(): string => 'qux')
 
             /** @var CacheInterface $cache */
-            ->withCache($cache, function() : string {
-                return 'foo';
-            })
+            ->withCache($cache, fn(): string => 'foo')
             ->get();
 
         // assert
@@ -786,16 +721,12 @@ class CacheBuilder_Test extends TestCase {
 
         // arrange
         $builder = (new CacheBuilder($this->uuidFactory))
-            ->withBuilder(function() : string {
-                return 'qux';
-            })
+            ->withBuilder(fn(): string => 'qux')
             ->withSessionId('asdf');
 
         // act
         $firstSessionId = $builder->getSessionId();
-        $builder = $builder->withBuilder(function() : string {
-            return 'fred';
-        });
+        $builder = $builder->withBuilder(fn(): string => 'fred');
         $secondSessionId = $builder->getSessionId();
         $builder = $builder->withSessionId('qwerty');
         $thirdSessionId = $builder->getSessionId();
